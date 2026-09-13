@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const authManager = require('./auth');
 const agentBridge = require('./agentBridge');
+const tunnelManager = require('./tunnelManager');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -156,10 +157,10 @@ wss.on('connection', (ws) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', async () => {
   console.log(`\n==================================================`);
   console.log(`🚀 Antigravity Remote Server active on port ${PORT}`);
-  console.log(`- Web App URL: http://localhost:${PORT}/mobile`);
-  console.log(`- WebSocket URL: ws://localhost:${PORT}/ws`);
   console.log(`==================================================\n`);
+  
+  await tunnelManager.startTunnel(PORT);
 });
