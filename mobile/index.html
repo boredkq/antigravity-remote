@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Antigravity Remote</title>
+  
+  <!-- iOS Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Antigravity" />
+  
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="src/styles/app.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="brand-title">Antigravity</span>
+      </div>
+
+      <div class="connection-status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+      </div>
+    </header>
+
+    <!-- Main Content Tab Panes -->
+    <main class="app-content">
+      <div class="tab-pane active" id="chat-tab"></div>
+      <div class="tab-pane" id="tasks-tab"></div>
+      <div class="tab-pane" id="files-tab"></div>
+      <div class="tab-pane" id="artifacts-tab"></div>
+      <div class="tab-pane" id="settings-tab"></div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="chat">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Chat</span>
+      </button>
+
+      <button class="nav-item" data-tab="tasks">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Tasks</span>
+      </button>
+
+      <button class="nav-item" data-tab="files">
+        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Files</span>
+      </button>
+
+      <button class="nav-item" data-tab="artifacts">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Artifacts</span>
+      </button>
+
+      <button class="nav-item" data-tab="settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Security Pairing Modal -->
+    <div class="modal-overlay" id="pairing-modal">
+      <div class="modal-box">
+        <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px;">🔐 Security Pairing</h3>
+        <p style="font-size: 13px; color: var(--text-muted);">Enter the 6-digit PIN displayed on your host terminal server console.</p>
+        
+        <input type="text" id="pin-input" class="input-field" placeholder="123456" maxlength="6" style="text-align: center; font-size: 22px; letter-spacing: 4px;" />
+        <button class="btn-primary" id="pair-submit-btn">Pair & Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Component Scripts -->
+  <script src="src/js/websocket.js"></script>
+  <script src="src/js/components/chat.js"></script>
+  <script src="src/js/components/tasks.js"></script>
+  <script src="src/js/components/files.js"></script>
+  <script src="src/js/components/artifacts.js"></script>
+  <script src="src/js/components/settings.js"></script>
+  <script src="src/js/app.js"></script>
+</body>
+</html>

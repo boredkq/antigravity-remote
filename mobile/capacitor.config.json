@@ -1,0 +1,8 @@
+{
+  "appId": "com.antigravity.remote",
+  "appName": "Antigravity Remote",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
