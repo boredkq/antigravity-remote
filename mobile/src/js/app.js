@@ -36,10 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const showPairingModal = () => pairingModal.classList.add('active');
   const hidePairingModal = () => pairingModal.classList.remove('active');
 
-  pairBtn.addEventListener('click', async () => {
-    const pin = pinInput.value.trim();
-    if (!pin) return;
-
+  const autoPairWithPin = async (pin) => {
     try {
       const serverHost = window.location.protocol + '//' + window.location.host;
       const res = await fetch(`${serverHost}/api/pair`, {
@@ -54,12 +51,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const wsUrl = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws';
         window.remoteWS.setServerConfig(wsUrl, data.token);
         window.remoteWS.connect();
-      } else {
-        alert(data.message || 'Invalid PIN code');
+        
+        // Clean URL query param for privacy
+        const url = new URL(window.location);
+        url.searchParams.delete('pin');
+        window.history.replaceState({}, '', url);
+        return true;
       }
     } catch (err) {
-      alert('Pairing error: ' + err.message);
+      console.error('Auto pairing error:', err);
     }
+    return false;
+  };
+
+  pairBtn.addEventListener('click', async () => {
+    const pin = pinInput.value.trim();
+    if (!pin) return;
+    const success = await autoPairWithPin(pin);
+    if (!success) alert('Invalid PIN code');
   });
 
   // Connection Indicator
@@ -77,7 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
     statusText.textContent = 'Offline';
   });
 
-  window.remoteWS.on('auth_required', () => {
+  window.remoteWS.on('auth_required', async () => {
+    // Check URL parameters for 1-Click Auto Pairing (e.g. ?pin=123456)
+    const urlParams = new URLSearchParams(window.location.search);
+    const pinFromUrl = urlParams.get('pin') || urlParams.get('auto_pair');
+
+    if (pinFromUrl) {
+      console.log('⚡ Auto-pairing with URL PIN parameter...');
+      const success = await autoPairWithPin(pinFromUrl);
+      if (success) return;
+    }
+
     statusDot.className = 'status-dot connecting';
     statusText.textContent = 'Pairing Required';
     showPairingModal();

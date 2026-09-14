@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const os = require('os');
+const authManager = require('./auth');
 
 class TunnelManager {
   constructor() {
@@ -21,14 +22,14 @@ class TunnelManager {
 
   async startTunnel(port = 8080) {
     const localIp = this.getLocalIP();
-    console.log(`[Network] Local Network URL: http://${localIp}:${port}`);
+    const currentPin = authManager.pairingPin;
+
+    console.log(`[Network] Local Network Auto-Pair URL: http://${localIp}:${port}/mobile?pin=${currentPin}`);
     console.log(`[Network] Local WebSocket URL: ws://${localIp}:${port}/ws`);
 
-    // Attempt Cloudflare Tunnel (cloudflared) or fallback secure public URL generator
     try {
       console.log(`[Tunnel] Initializing Secure Internet Remote Gateway...`);
       
-      // Spawn cloudflared tunnel if available or provide quick tunnel link
       const tunnel = spawn('npx', ['-y', 'localtunnel', '--port', port.toString()], {
         shell: true
       });
@@ -39,11 +40,16 @@ class TunnelManager {
         if (match) {
           this.publicUrl = match[0];
           const wssUrl = this.publicUrl.replace('https://', 'wss://') + '/ws';
+          const autoPairUrl = `${this.publicUrl}/mobile?pin=${currentPin}`;
+          
           console.log(`\n==================================================`);
+          console.log(`⚡ 1-CLICK DIRECT AUTO-PAIR INTERNET LINK:`);
+          console.log(`👉 ${autoPairUrl}`);
+          console.log(`==================================================`);
           console.log(`🌐 GLOBAL INTERNET REMOTE GATEWAY ACTIVE!`);
-          console.log(`- Public HTTPS Web App: ${this.publicUrl}/mobile`);
-          console.log(`- Public WSS Remote URL: ${wssUrl}`);
-          console.log(`You can now connect your iOS / Android app from ANYWHERE in the world!`);
+          console.log(`- Public Web App: ${this.publicUrl}/mobile`);
+          console.log(`- Public WebSocket: ${wssUrl}`);
+          console.log(`- Security PIN Code: ${currentPin}`);
           console.log(`==================================================\n`);
         }
       });
@@ -59,7 +65,7 @@ class TunnelManager {
 
     return {
       localIp,
-      localWebUrl: `http://${localIp}:${port}/mobile`,
+      localWebUrl: `http://${localIp}:${port}/mobile?pin=${currentPin}`,
       localWsUrl: `ws://${localIp}:${port}/ws`
     };
   }
